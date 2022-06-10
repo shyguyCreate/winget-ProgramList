@@ -120,21 +120,22 @@ Add-Content $txtPath (($Global:arpCU64Programs | Where-Object Type -eq Program).
 Add-Content $txtPath ("`nARP (MSIX) entries for User | X64`n");
 Add-Content $txtPath ($Global:msixPrograms.PackageFamilyName);
 
+Write-Host "`nOpening .txt file with information about programs on the system."
 #Open .txt file
 Invoke-Item $txtPath;
 
 #List of global variables
 Write-Output "`r`n`n============List of available script variables============`n";
 #Gets the variables and prints them with a dollar sign ($) char in the beginning.
-Get-Variable -Name all*,arp*,msix* -Scope Global | ForEach-Object {Write-Output "`$$($_.Name)"};
+Get-Variable -Name all*,arp*,msix* -Exclude *Path,*OnlyPrograms -Scope Global | ForEach-Object {Write-Output "`$$($_.Name)"};
 
 #Gives some advice to the host too what to do with the variables
 Write-Output "
 --You can copy variables' values to the clipboard with--
-   ?var? | clip  -or  Set-Clipboard ?var? -Append"
+   <var> | clip  -or  Set-Clipboard <var> -Append"
 Write-Output "
 --Or you can count/measure their objects/content with--
-    measure ?var?  -or  measure ?var? -Line`n`n"
+    measure <var>  -or  measure <var> -Line`n`n"
 
 
 #END of the script
