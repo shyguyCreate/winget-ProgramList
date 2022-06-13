@@ -31,4 +31,4 @@ Enter this in your powershell terminal.
 ### See also
 
 - [winget-GetProperties](https://github.com/shyguyCreate/winget-GetProperties) - Transform `winget` output columns into real properties.
-- [winget-DeleteExtraLogInfo](https://github.com/shyguyCreate/winget-DeleteExtraLogInfo) - Delete unecessary log information created by `winget`.
+- [winget-MakeLogsEasier](https://github.com/shyguyCreate/winget-MakeLogsEasier) - Delete unecessary log information created by `winget`.
