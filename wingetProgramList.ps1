@@ -10,34 +10,24 @@
 
 function SeparateARP([System.Collections.ArrayList]$arpList, [string]$path)
 {
-    #Sees which arp has no SystemComponent and if DisplayName exist.
-    $arpPrograms = (Get-ItemProperty $path | Where-Object SystemComponent -ne 1 |
-                    Where-Object DisplayName -ne $null | Select-Object -ExpandProperty PSChildName);
-    
-    #Sees which arp has SystemComponent.
-    $arpSysComp = (Get-ItemProperty $path | Where-Object SystemComponent -eq 1 |
-                   Select-Object -ExpandProperty PSChildName);
-    
-    #Sees which arp has no Property at all, the Valuecount Property counts the number of properties.
-    $arpNoProp = (Get-Item $path | Where-Object ValueCount -eq 0 |
-                  Select-Object -ExpandProperty Name | Split-Path -Leaf);
-    
-
     foreach($arp in (Get-ChildItem $path | Select-Object Name))
     {   
+        #Adds 'Registry::' to beginning so that it can be recognized by Get-ItemProperty
+        $arpReg = "Registry::$($arp.Name)"
+        
         #Leaves only the program name without path.
         $arp.Name = $arp.Name | Split-Path -Leaf
 
         #If this arp has no SystemComponent and if DisplayName exist enters here.
-        if($arp.Name -in $arpPrograms){
+        if($null -ne (Get-ItemProperty $arpReg | Where-Object SystemComponent -ne 1 | Where-Object DisplayName -ne $null)){
             $arp | Add-Member -NotePropertyName Type -NotePropertyValue Program;
         }
         #If this arp has SystemComponent enters here.
-        elseif($arp.Name -in $arpSysComp){
+        elseif($null -ne (Get-ItemProperty $arpReg | Where-Object SystemComponent -eq 1)){
             $arp | Add-Member -NotePropertyName Type -NotePropertyValue SystemComponent;
         }
         #If this arp has no Property at all enters here.
-        elseif($arp.Name -in $arpNoProp){
+        else{
             $arp | Add-Member -NotePropertyName Type -NotePropertyValue $null;
         }
         #Adds the ARP with the New Member to the list.
@@ -65,6 +55,7 @@ SeparateARP $Global:arpCU64Programs -path $arpCU64Path;
 
 #Add all the ARP with the new property to a single variable for later.
 $Global:arpALLPrograms = $Global:arpLM64Programs + $Global:arpLM86Programs + $Global:arpCU64Programs;
+$Global:arpALLPrograms = $Global:arpALLPrograms | Sort-Object Name -Unique;
 
 
 
@@ -72,27 +63,22 @@ $Global:arpALLPrograms = $Global:arpLM64Programs + $Global:arpLM86Programs + $Gl
 
 $Global:msixPrograms = (Get-AppxPackage -PackageTypeFilter Main | 
                         Where-Object -Property SignatureKind -ne 'System' |
-                        Select-Object PackageFamilyName);
+                        Select-Object -ExpandProperty PackageFamilyName);
 
 
 
 ################## For Winget List Command ########################
 
-#Separates the ARP, leaving just the ones that posses the Program value in the Type property.
-$arpOnlyPrograms = ($Global:arpALLPrograms | Where-Object Type -eq Program).Name;
-#Expands the msix PackageFamilyName property.
-$msixOnlyPrograms = $Global:msixPrograms.PackageFamilyName;
-
 #List for all programs to be sorted in ASCII.
 $Global:allPrograms = [System.Collections.ArrayList]::new();
 
 #For some inexplicable reason only when you add one by one the items it can sort correctly in ASCII.
-foreach($prog in ($arpOnlyPrograms + $msixOnlyPrograms))
+foreach($prog in (($Global:arpALLPrograms | Where-Object Type -eq Program).Name + $Global:msixPrograms))
 {
     $Global:allPrograms.Add($prog) > $null;
 }
 #List is sorted in ASCII.
-$Global:allPrograms.Sort([System.StringComparer]::Ordinal); 
+$Global:allPrograms.Sort([System.StringComparer]::Ordinal);
 
 
 
@@ -118,7 +104,7 @@ Add-Content $txtPath ("`nARP entries for User | X64`n");
 Add-Content $txtPath (($Global:arpCU64Programs | Where-Object Type -eq Program).Name);
 #Sends MSIX to .txt file
 Add-Content $txtPath ("`nARP (MSIX) entries for User | X64`n");
-Add-Content $txtPath ($Global:msixPrograms.PackageFamilyName);
+Add-Content $txtPath ($Global:msixPrograms);
 
 Write-Host "`nOpening .txt file with information about programs on the system."
 #Open .txt file
@@ -127,15 +113,12 @@ Invoke-Item $txtPath;
 #List of global variables
 Write-Output "`r`n`n============List of available script variables============`n";
 #Gets the variables and prints them with a dollar sign ($) char in the beginning.
-Get-Variable -Name all*,arp*,msix* -Exclude *Path,*OnlyPrograms -Scope Global | ForEach-Object {Write-Output "`$$($_.Name)"};
+Get-Variable -Name all*,arp*,msix* -Exclude *Path -Scope Global | ForEach-Object {Write-Output "`$$($_.Name)"};
 
-#Gives some advice to the host too what to do with the variables
-Write-Output "
---You can copy variables' values to the clipboard with--
-   <var> | clip  -or  Set-Clipboard <var> -Append"
-Write-Output "
---Or you can count/measure their objects/content with--
-    measure <var>  -or  measure <var> -Line`n`n"
+#Gives some advice to the host for the variables usage
+Write-Output "`n--Use 'Where-Object' to separte parts of the variable output"
+Write-Output "--Use 'Measure-Object' to count the number of programs"
+Write-Output "--Use 'Set-Clipboard -Append' to add the variable output to the clipboard`n`n"
 
 
 #END of the script
