@@ -6,8 +6,7 @@ If you have used `winget list` and counted the number of programs, maybe you hav
 
 And if you are like me and wanted to know where `winget` get all that many programs, this script makes just that.
 
-The script will look through the registry, grab the programs and information about the *type of program* that it finds, and stored them in variables. 
-Finally, the script also creates a file with all the programs that are found. this file is written in a similar way in which `winget` writes its logs.
+The script will look through the registry, grab the programs and information about the *type of program* that it finds, and stored them in variables. Finally, the script also creates a file with all the programs that are found, this file is written in a similar way in which `winget` writes its logs.
 
 If you `echo` the most important variable `$allPrograms`, it will be sort in ASCII order, because that is the way `winget` sort the `Id` column in the **list** output.
 
@@ -15,12 +14,12 @@ If you `echo` the most important variable `$allPrograms`, it will be sort in ASC
 
 ### Purpose
 
-As mention before, this script was made to recopile and understand from where is that `winget` is obtaining information about the programs that are displayed when running `winget list`.
+As mention before, this script was made to understand from where is that `winget` is obtaining information about the programs that are displayed when running `winget list`.
 
 ### How to run it
 
-Make sure your system has permission for running scripts.
-Enter this in your powershell terminal.
+Make sure your system has permission for running scripts. Enter this in your powershell terminal.
+
 > Set-ExecutionPolicy RemoteSigned
 
 **Running process**
@@ -31,4 +30,4 @@ Enter this in your powershell terminal.
 ### See also
 
 - [winget-GetProperties](https://github.com/shyguyCreate/winget-GetProperties) - Transform `winget` output columns into real properties.
-- [winget-MakeLogsEasier](https://github.com/shyguyCreate/winget-MakeLogsEasier) - Delete unecessary log information created by `winget`.
+- [winget-MakeLogsEasier](https://github.com/shyguyCreate/winget-MakeLogsEasier) - Delete unnecessary log information created by `winget`.
