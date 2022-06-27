@@ -30,4 +30,4 @@ Make sure your system has permission for running scripts. Enter this in your pow
 ### See also
 
 - [winget-GetProperties](https://github.com/shyguyCreate/winget-GetProperties) - Transform `winget` output columns into real properties.
-- [winget-MakeLogsEasier](https://github.com/shyguyCreate/winget-MakeLogsEasier) - Delete unnecessary log information created by `winget`.
+- [winget-SimplifyLogs](https://github.com/shyguyCreate/winget-SimplifyLogs) - Delete unnecessary log information created by `winget`.
